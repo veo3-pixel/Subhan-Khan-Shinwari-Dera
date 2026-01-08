@@ -519,16 +519,16 @@ export const MENU_ITEMS: MenuItem[] = [
   }
 ];
 
-// Added missing costPrice to INITIAL_INVENTORY items to satisfy InventoryItem interface
+// Added missing costPrice and category to INITIAL_INVENTORY items to satisfy InventoryItem interface
 export const INITIAL_INVENTORY: InventoryItem[] = [
-  { id: 'inv1', name: 'Chicken Meat', quantity: 50, unit: 'kg', threshold: 10, costPrice: 0 },
-  { id: 'inv2', name: 'Mutton Meat', quantity: 20, unit: 'kg', threshold: 5, costPrice: 0 },
-  { id: 'inv3', name: 'Beef Meat', quantity: 20, unit: 'kg', threshold: 5, costPrice: 0 },
-  { id: 'inv4', name: 'Flour (Atta)', quantity: 100, unit: 'kg', threshold: 20, costPrice: 0 },
-  { id: 'inv5', name: 'Cooking Oil/Ghee', quantity: 50, unit: 'L', threshold: 10, costPrice: 0 },
-  { id: 'inv6', name: 'Rice', quantity: 40, unit: 'kg', threshold: 10, costPrice: 0 },
-  { id: 'inv7', name: 'Vegetables Mix', quantity: 15, unit: 'kg', threshold: 3, costPrice: 0 },
-  { id: 'inv8', name: 'Daal Mash', quantity: 10, unit: 'kg', threshold: 2, costPrice: 0 },
-  { id: 'inv9', name: 'Daal Chana', quantity: 10, unit: 'kg', threshold: 2, costPrice: 0 },
-  { id: 'inv10', name: 'Tea Leaves/Gurr', quantity: 5, unit: 'kg', threshold: 1, costPrice: 0 },
+  { id: 'inv1', name: 'Chicken Meat', quantity: 50, unit: 'kg', threshold: 10, costPrice: 0, category: 'Meat' },
+  { id: 'inv2', name: 'Mutton Meat', quantity: 20, unit: 'kg', threshold: 5, costPrice: 0, category: 'Meat' },
+  { id: 'inv3', name: 'Beef Meat', quantity: 20, unit: 'kg', threshold: 5, costPrice: 0, category: 'Meat' },
+  { id: 'inv4', name: 'Flour (Atta)', quantity: 100, unit: 'kg', threshold: 20, costPrice: 0, category: 'Grocery' },
+  { id: 'inv5', name: 'Cooking Oil/Ghee', quantity: 50, unit: 'L', threshold: 10, costPrice: 0, category: 'Grocery' },
+  { id: 'inv6', name: 'Rice', quantity: 40, unit: 'kg', threshold: 10, costPrice: 0, category: 'Grocery' },
+  { id: 'inv7', name: 'Vegetables Mix', quantity: 15, unit: 'kg', threshold: 3, costPrice: 0, category: 'Vegetables' },
+  { id: 'inv8', name: 'Daal Mash', quantity: 10, unit: 'kg', threshold: 2, costPrice: 0, category: 'Grocery' },
+  { id: 'inv9', name: 'Daal Chana', quantity: 10, unit: 'kg', threshold: 2, costPrice: 0, category: 'Grocery' },
+  { id: 'inv10', name: 'Tea Leaves/Gurr', quantity: 5, unit: 'kg', threshold: 1, costPrice: 0, category: 'Grocery' },
 ];

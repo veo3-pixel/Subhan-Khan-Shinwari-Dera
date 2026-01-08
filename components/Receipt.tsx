@@ -9,12 +9,10 @@ interface ReceiptProps {
 
 export const Receipt: React.FC<ReceiptProps> = ({ order }) => {
   const [config, setConfig] = useState<PrinterConfig | null>(null);
-  // Fixed: PersistenceService.getPosSettings() was changed to getSettings() to match the service definition.
   const [settings, setSettings] = useState<SystemSettings>(PersistenceService.getSettings());
 
   useEffect(() => {
     setConfig(PersistenceService.getPrinterConfig());
-    // Fixed: PersistenceService.getPosSettings() was changed to getSettings() to match the service definition.
     setSettings(PersistenceService.getSettings());
   }, []);
 
@@ -38,12 +36,14 @@ export const Receipt: React.FC<ReceiptProps> = ({ order }) => {
     <div className={`${widthClass} bg-white text-black p-2 font-mono ${fontSize} leading-tight`}>
       <div className="flex flex-col items-center mb-2">
         {/* Receipt Logo - Greyscale filter for thermal printing optimization */}
-        <img 
-          src="/logo.png" 
-          alt={settings.restaurantName} 
-          className="w-24 mb-1 grayscale object-contain"
-          onError={(e) => e.currentTarget.style.display = 'none'}
-        />
+        {settings.logo && (
+          <img 
+            src={settings.logo} 
+            alt={settings.restaurantName} 
+            className="w-24 mb-1 grayscale object-contain"
+            onError={(e) => e.currentTarget.style.display = 'none'}
+          />
+        )}
         <h1 className="text-sm font-bold uppercase mt-1 text-center leading-tight">
             {settings.restaurantName}
         </h1>

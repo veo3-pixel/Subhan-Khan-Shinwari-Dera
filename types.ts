@@ -58,6 +58,7 @@ export enum ExpenseCategory {
   UTILITIES = 'Utilities',
   RENT = 'Rent',
   SALARY = 'Salary',
+  ADVANCE = 'Staff Advance',
   OTHER = 'Other'
 }
 
@@ -156,6 +157,7 @@ export interface InventoryItem {
   threshold: number;
   quantity: number;
   costPrice: number;
+  category: string;
 }
 
 export interface PurchaseItem {
@@ -193,6 +195,7 @@ export interface User {
 export interface SystemSettings {
   restaurantName: string;
   restaurantUrduName?: string;
+  logo?: string;
   address: string;
   phone: string;
   currencySymbol: string;
@@ -248,7 +251,6 @@ export interface AttendanceRecord {
   checkIn?: string;
 }
 
-// Fixed: Added missing NoteCategory and Note types used in NoteEditor and NoteList
 export enum NoteCategory {
   GENERAL = 'General',
   RECIPES = 'Recipes',

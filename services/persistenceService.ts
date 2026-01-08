@@ -21,6 +21,7 @@ const KEYS = {
   MENU: 'shinwari_pos_menu',
   INVENTORY: 'shinwari_pos_inventory',
   CATEGORIES: 'shinwari_pos_categories',
+  INV_CATEGORIES: 'shinwari_pos_inventory_categories',
   PURCHASES: 'shinwari_pos_purchases',
   TRANSACTIONS: 'shinwari_pos_transactions',
   EXPENSES: 'shinwari_pos_expenses',
@@ -45,6 +46,7 @@ const DEFAULT_USERS: User[] = [
 const DEFAULT_SETTINGS: SystemSettings = {
   restaurantName: 'Subhan Khan Shinwari Dera',
   restaurantUrduName: 'سبحان خان شنواری ڈیرہ',
+  logo: 'https://cdn-icons-png.flaticon.com/512/1046/1046771.png',
   address: 'Main Bypass Road, Near Terminal',
   phone: '0300-4097479',
   currencySymbol: 'Rs.',
@@ -60,6 +62,8 @@ const DEFAULT_PRINTER: PrinterConfig = {
   autoPrint: false
 };
 
+const DEFAULT_INV_CATEGORIES = ['Meat', 'Vegetables', 'Grocery', 'Dairy', 'Packaging', 'Other'];
+
 export const PersistenceService = {
   get: (key: string, fallback: any) => {
     const data = localStorage.getItem(key);
@@ -74,8 +78,13 @@ export const PersistenceService = {
 
   getOrders: (): Order[] => PersistenceService.get(KEYS.ORDERS, []).map((o: any) => ({ ...o, timestamp: new Date(o.timestamp) })),
   getMenu: (): MenuItem[] => PersistenceService.get(KEYS.MENU, MENU_ITEMS),
-  getInventory: (): InventoryItem[] => PersistenceService.get(KEYS.INVENTORY, INITIAL_INVENTORY),
+  getInventory: (): InventoryItem[] => {
+      const items = PersistenceService.get(KEYS.INVENTORY, INITIAL_INVENTORY);
+      // Ensure all items have a category
+      return items.map((i: any) => ({ ...i, category: i.category || 'Other' }));
+  },
   getCategories: (): string[] => PersistenceService.get(KEYS.CATEGORIES, ['Karahi', 'Handi', 'BBQ', 'Fry', 'Salan', 'Breakfast', 'Bread', 'Drink']),
+  getInventoryCategories: (): string[] => PersistenceService.get(KEYS.INV_CATEGORIES, DEFAULT_INV_CATEGORIES),
   getPurchases: (): Purchase[] => PersistenceService.get(KEYS.PURCHASES, []),
   getTransactions: (): StockTransaction[] => PersistenceService.get(KEYS.TRANSACTIONS, []),
   getExpenses: (): Expense[] => PersistenceService.get(KEYS.EXPENSES, []),
@@ -90,6 +99,7 @@ export const PersistenceService = {
   saveMenu: (data: MenuItem[]) => PersistenceService.set(KEYS.MENU, data),
   saveInventory: (data: InventoryItem[]) => PersistenceService.set(KEYS.INVENTORY, data),
   saveCategories: (data: string[]) => PersistenceService.set(KEYS.CATEGORIES, data),
+  saveInventoryCategories: (data: string[]) => PersistenceService.set(KEYS.INV_CATEGORIES, data),
   savePurchases: (data: Purchase[]) => PersistenceService.set(KEYS.PURCHASES, data),
   saveTransactions: (data: StockTransaction[]) => PersistenceService.set(KEYS.TRANSACTIONS, data),
   saveExpenses: (data: Expense[]) => PersistenceService.set(KEYS.EXPENSES, data),

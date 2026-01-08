@@ -20,6 +20,7 @@ import {
   MenuItem, 
   OrderType, 
   Purchase, 
+  PurchaseItem,
   StockTransaction, 
   TransactionType, 
   Expense, 
@@ -108,6 +109,71 @@ const App: React.FC = () => {
       PersistenceService.savePrinterConfig(newConfig);
   };
 
+  const handlePurchase = (supplier: string, items: PurchaseItem[]) => {
+      const newPurchase: Purchase = {
+          id: Math.random().toString(36).substr(2, 9).toUpperCase(),
+          date: new Date(),
+          supplier,
+          items,
+          totalCost: items.reduce((sum, i) => sum + i.cost, 0)
+      };
+
+      const updatedPurchases = [newPurchase, ...purchases];
+      setPurchases(updatedPurchases);
+      PersistenceService.savePurchases(updatedPurchases);
+
+      const updatedInventory = [...inventory];
+      const newTransactions = [...transactions];
+
+      items.forEach(pItem => {
+          const invIdx = updatedInventory.findIndex(i => i.id === pItem.inventoryItemId);
+          if (invIdx >= 0) {
+              updatedInventory[invIdx].quantity += pItem.quantity;
+              // Update avg cost price
+              if (pItem.quantity > 0) {
+                updatedInventory[invIdx].costPrice = pItem.cost / pItem.quantity;
+              }
+              
+              newTransactions.push({
+                  id: Math.random().toString(36).substr(2, 9).toUpperCase(),
+                  inventoryItemId: pItem.inventoryItemId,
+                  type: TransactionType.PURCHASE,
+                  quantityChange: pItem.quantity,
+                  date: new Date(),
+                  referenceId: newPurchase.id
+              });
+          }
+      });
+
+      setInventory(updatedInventory);
+      PersistenceService.saveInventory(updatedInventory);
+      setTransactions(newTransactions);
+      PersistenceService.saveTransactions(newTransactions);
+  };
+
+  const handleAdjustStock = (itemId: string, newQty: number, reason: string) => {
+      const updatedInventory = inventory.map(item => {
+          if (item.id === itemId) {
+              const diff = newQty - item.quantity;
+              const newTxn: StockTransaction = {
+                  id: Math.random().toString(36).substr(2, 9).toUpperCase(),
+                  inventoryItemId: itemId,
+                  type: TransactionType.ADJUSTMENT,
+                  quantityChange: diff,
+                  date: new Date(),
+                  reason
+              };
+              const updatedTxns = [newTxn, ...transactions];
+              setTransactions(updatedTxns);
+              PersistenceService.saveTransactions(updatedTxns);
+              return { ...item, quantity: newQty };
+          }
+          return item;
+      });
+      setInventory(updatedInventory);
+      PersistenceService.saveInventory(updatedInventory);
+  };
+
   const handleUpdateMenu = (items: MenuItem[]) => { setMenuItems(items); PersistenceService.saveMenu(items); };
   const handleAddCategory = (name: string) => { if (!categories.includes(name)) { const n = [...categories, name]; setCategories(n); PersistenceService.saveCategories(n); } };
   const handleUpdateCategory = (oldName: string, newName: string) => {
@@ -150,7 +216,7 @@ const App: React.FC = () => {
       case 'kitchen': return <KitchenView orders={orders} updateOrderStatus={(id, s) => { const u = orders.map(o => o.id === id ? {...o, status: s} : o); setOrders(u); PersistenceService.saveOrders(u); }} onEditOrder={(o) => { setCart(o.items); setCurrentOrderId(o.id); setActiveTab('pos'); }} onPrintKOT={(o) => { setPreviewOrder(o); setPrintMode('KOT'); }} />;
       case 'dashboard': return <DashboardView settings={settings} currentUser={currentUser} orders={orders} purchases={purchases} expenses={expenses} onPrintReceipt={(o) => { setPreviewOrder(o); setPrintMode('RECEIPT'); }} />;
       case 'menu': return <MenuView currentUser={currentUser} menuItems={menuItems} inventory={inventory} categories={categories} onUpdateMenu={handleUpdateMenu} onAddCategory={handleAddCategory} onUpdateCategory={handleUpdateCategory} />;
-      case 'inventory': return <InventoryView inventory={inventory} purchases={purchases} transactions={transactions} onAddInventoryItem={(i) => { const n = [...inventory, i]; setInventory(n); PersistenceService.saveInventory(n); }} onUpdateInventoryItem={(i) => { const n = inventory.map(x => x.id === i.id ? i : x); setInventory(n); PersistenceService.saveInventory(n); }} onPurchase={() => {}} onAdjustStock={() => {}} />;
+      case 'inventory': return <InventoryView inventory={inventory} purchases={purchases} transactions={transactions} onAddInventoryItem={(i) => { const n = [...inventory, i]; setInventory(n); PersistenceService.saveInventory(n); }} onUpdateInventoryItem={(i) => { const n = inventory.map(x => x.id === i.id ? i : x); setInventory(n); PersistenceService.saveInventory(n); }} onPurchase={handlePurchase} onAdjustStock={handleAdjustStock} />;
       case 'expenses': return <ExpenseView currentUser={currentUser} expenses={expenses} onAddExpense={(e) => { const n = [e, ...expenses]; setExpenses(n); PersistenceService.saveExpenses(n); }} onDeleteExpense={(id) => { const n = expenses.filter(x => x.id !== id); setExpenses(n); PersistenceService.saveExpenses(n); }} />;
       case 'reports': return <ReportsView currentUser={currentUser} orders={orders} expenses={expenses} purchases={purchases} />;
       case 'settings': return <SettingsView currentUser={currentUser} settings={settings} printerConfig={printerConfig} onUpdateSettings={handleUpdateSettings} onUpdatePrinterConfig={handleUpdatePrinterConfig} />;
